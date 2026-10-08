@@ -1,48 +1,48 @@
 name: Build Observateur Basket V2
 
-Sur :
-workflow_dispatch :
-Push :
-Branches :
-- Principal
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
-Emplois :
-Build :
-Fonctionne-CONTINU : Ubuntu-Latest
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-Étapes :
-- nom : Projet de vérification
-Utilisations : actions/checkout@v6
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v6
 
-- nom : Setup Java 17
-Utilisations : actions/configuration java@v5
-avec :
-Distribution : Temurin
-Version Java : '17'
+      - name: Setup Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
 
-- nom : Configurer le SDK Android
-Utilisations : Android-actions/setup-android@v4
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
 
-- nom : Accepter les licences Android
-run : oui | sdkmanager --licences > /dev/null || true
+      - name: Accept Android licenses
+        run: yes | sdkmanager --licenses > /dev/null || true
 
-- nom : Installer des packages Android
-Run : |
-SDKmanager « Platform-tools »
-SDKMANAGER « Plateformes ; Android-35 »
-sdkmanager « build-tools ; 35.0.0"
+      - name: Install Android packages
+        run: |
+          sdkmanager "platform-tools"
+          sdkmanager "platforms;android-35"
+          sdkmanager "build-tools;35.0.0"
 
-- nom : Setup Gradle
-Utilisations : Gradle/Actions/Setup-gradle@v6
-avec :
-Version Gradle : « 8.7 »
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: '8.7'
 
-- nom : APK de construction
-working-directory : ObservateurBasket-Android-V2
-run : gradle assembleDebug
+      - name: Build APK
+        working-directory: ObservateurBasket-Android-V2
+        run: gradle assembleDebug
 
-- Nom : Télécharger APK
-Utilisations : actions/téléchargement artifact@v4
-avec :
-name: Observateur-Basket-V2-APK
-path : ObservateurBasket-Android-V2/app/build/outputs/apk/debug/app-debug.apk
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Observateur-Basket-V2-APK
+          path: ObservateurBasket-Android-V2/app/build/outputs/apk/debug/app-debug.apk
