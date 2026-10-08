@@ -1,0 +1,48 @@
+name: Build Observateur Basket V2
+
+Sur :
+workflow_dispatch :
+Push :
+Branches :
+- Principal
+
+Emplois :
+Build :
+Fonctionne-CONTINU : Ubuntu-Latest
+
+Étapes :
+- nom : Projet de vérification
+Utilisations : actions/checkout@v6
+
+- nom : Setup Java 17
+Utilisations : actions/configuration java@v5
+avec :
+Distribution : Temurin
+Version Java : '17'
+
+- nom : Configurer le SDK Android
+Utilisations : Android-actions/setup-android@v4
+
+- nom : Accepter les licences Android
+run : oui | sdkmanager --licences > /dev/null || true
+
+- nom : Installer des packages Android
+Run : |
+SDKmanager « Platform-tools »
+SDKMANAGER « Plateformes ; Android-35 »
+sdkmanager « build-tools ; 35.0.0"
+
+- nom : Setup Gradle
+Utilisations : Gradle/Actions/Setup-gradle@v6
+avec :
+Version Gradle : « 8.7 »
+
+- nom : APK de construction
+working-directory : ObservateurBasket-Android-V2
+run : gradle assembleDebug
+
+- Nom : Télécharger APK
+Utilisations : actions/téléchargement artifact@v4
+avec :
+name: Observateur-Basket-V2-APK
+path : ObservateurBasket-Android-V2/app/build/outputs/apk/debug/app-debug.apk
